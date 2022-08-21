@@ -1,8 +1,10 @@
+import Content from "../Content/Content";
+
 import styles from "./NewTasks.module.css";
 import { PlusCircle } from "phosphor-react";
 import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 
-function NewTasks() {
+function NewTasks(isChecked: boolean) {
   const [tasks, setTasks] = useState([]);
   const [newTaskText, setNewTaskText] = useState("");
   const [count, setCount] = useState(0);
@@ -22,6 +24,25 @@ function NewTasks() {
 
   function handleNewTaskInvalid(event: InvalidEvent<HTMLInputElement>) {
     event.target.setCustomValidity("You need to write something!");
+  }
+
+  function deleteTask(taskToDelete: string) {
+    const tasksWithoutDeletedOne = tasks.filter((task) => {
+      return task !== taskToDelete;
+    });
+    setTasks(tasksWithoutDeletedOne);
+    setCount(count - 1);
+    isChecked && countDone !== 0
+      ? setCountDone(countDone - 1)
+      : setCountDone(countDone);
+  }
+
+  function handleTaskDone() {
+    setCountDone(countDone - 1);
+  }
+
+  function handleTaskToDO() {
+    setCountDone(countDone + 1);
   }
 
   return (
@@ -57,7 +78,18 @@ function NewTasks() {
           </div>
         </div>
       </div>
-      
+      {tasks.map((content) => {
+        return (
+          <Content
+            key={content}
+            content={content}
+            onDeleteTask={deleteTask}
+            onHandleTaskDone={handleTaskDone}
+            onHandleTaskToDO={handleTaskToDO}
+            countDone={0}
+          />
+        );
+      })}
     </article>
   );
 }
